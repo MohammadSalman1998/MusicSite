@@ -1,14 +1,10 @@
-// ignore_for_file: depend_on_referenced_packages
 // import 'dart:convert';
-// import 'dart:html';
-
 import 'package:csc_picker/csc_picker.dart';
+// import 'package:csc_picker/model/select_status_model.dart';
 import 'package:flutter/material.dart';
 import 'package:music_site/components/my_button.dart';
 import 'package:music_site/components/my_text_field.dart';
-// import 'package:csc_picker/csc_picker.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:flutter/src/material/dropdown.dart';
+import 'package:http/http.dart' as http;
 
 class AddArtist extends StatefulWidget {
   const AddArtist({super.key});
@@ -18,8 +14,81 @@ class AddArtist extends StatefulWidget {
 }
 
 class _AddArtistState extends State<AddArtist> {
-  List<String> items = ['Male', 'Female'];
-  String selectedItem = 'Male';
+  List<String> items = ['Select your gender', 'Male', 'Female'];
+  String selectedItem = 'Select your gender';
+  late String selectedCountry;
+
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  late String genderController;
+  late String countryController;
+
+  Future<void> _addArtist(
+      String firstName, String lastName, String gender, String country) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: const Color.fromARGB(255, 185, 57, 10),
+            backgroundColor:
+                const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
+          ));
+        });
+    final url =
+        Uri.https('musicsitedb.000webhostapp.com', '/API/AddArtist.php');
+    final response = await http.post(url, body: {
+      'firstName': firstName,
+      'lastName': lastName,
+      'gender': gender,
+      'country': country,
+    });
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+    // var getData = json.decode(response.body);
+    // if (getData == 'faildAddArtist') {
+    //   if (mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       const SnackBar(
+    //         content: Text('make sure of your inputs'),
+    //         backgroundColor: Color.fromARGB(255, 255, 28, 7),
+    //         duration: Duration(seconds: 3),
+    //       ),
+    //     );
+    //   }
+    // } else {
+    if (response.statusCode == 200) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Added Artist successful!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+
+        firstNameController.text = '';
+        lastNameController.text = '';
+        genderController = '';
+        selectedItem = 'Select your gender';
+        // countryController = '';
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const AddArtist()));
+      }
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added failed: ${response.body}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+    // }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,15 +102,18 @@ class _AddArtistState extends State<AddArtist> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // const SizedBox(
-              //   height: 40,
-              // ),
               Image.asset(
                 "assets/logo4.jpg",
                 width: 300,
@@ -49,32 +121,29 @@ class _AddArtistState extends State<AddArtist> {
               const SizedBox(
                 height: 20,
               ),
-              const Row(
+              Row(
                 children: [
                   Expanded(
-                    // flex: 2,
-                    child: MyTextField(hintText: "First Name"),
+                    child: MyTextField(
+                        controller: firstNameController,
+                        hintText: "First Name"),
                   ),
-                  // SizedBox(height: 10),
                   Expanded(
-                    // flex: 3,
-                    child: MyTextField(hintText: "Last Name"),
+                    child: MyTextField(
+                      controller: lastNameController,
+                      hintText: "Last Name",
+                    ),
                   ),
-                  // SizedBox(height: 10),
                 ],
               ),
-
               const SizedBox(
                 height: 12,
               ),
-
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 25),
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 decoration: BoxDecoration(
-                  // color:
-                  // const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -89,21 +158,9 @@ class _AddArtistState extends State<AddArtist> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      // child: DropdownMenu(
-                      //   // controller: iconController,
-                      //   width: double.maxFinite,
-                      //   enableFilter: true,
-                      //   requestFocusOnTap: true,
-                      //   label: Text('Select Gender'),
-                      //   inputDecorationTheme: InputDecorationTheme(
-                      //     filled: true,
-                      //     contentPadding: EdgeInsets.symmetric(vertical: 3.0),
-                      //   ),
-                      //   dropdownMenuEntries: [],
-                      // ),
-
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton(
+                          // controller: genderController,
                           value: selectedItem,
                           items: items
                               .map((item) => DropdownMenuItem(
@@ -113,11 +170,11 @@ class _AddArtistState extends State<AddArtist> {
                             color: Colors.black,
                             fontSize: 20,
                           ),
-                          // dropdownColor: const Color.fromARGB(255, 154, 72, 72),
                           onChanged: (String? newValue) {
                             setState(() {
                               selectedItem = newValue!;
                             });
+                            genderController = selectedItem;
                           },
                         ),
                       ),
@@ -125,15 +182,12 @@ class _AddArtistState extends State<AddArtist> {
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 25),
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 decoration: BoxDecoration(
-                  // color:
-                  //     const Color.fromARGB(255, 154, 72, 72).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -147,17 +201,21 @@ class _AddArtistState extends State<AddArtist> {
                 child: CSCPicker(
                   dropdownDecoration: const BoxDecoration(
                     color: Colors.transparent,
-                    // borderRadius: BorderRadius.circular(5),
                   ),
                   selectedItemStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 18,
                   ),
                   // layout: Layout.vertical,
-                  // showCities: false,
-                  // showStates: false,
-                  //flagState: CountryFlag.DISABLE,
-                  onCountryChanged: (country) {},
+                  showCities: false,
+                  showStates: false,
+                  flagState: CountryFlag.DISABLE,
+                  onCountryChanged: (String? country) {
+                    setState(() {
+                      selectedCountry = country!;
+                    });
+                    countryController = selectedCountry;
+                  },
                   onStateChanged: (state) {},
                   onCityChanged: (city) {},
                   dropdownDialogRadius: 30,
@@ -170,7 +228,33 @@ class _AddArtistState extends State<AddArtist> {
               MyButton(
                 customColor: const Color.fromARGB(255, 185, 57, 10),
                 text: "Add",
-                onTap: () {},
+                onTap: () {
+                  final firstName = firstNameController.text;
+                  final lastName = lastNameController.text;
+                  final gender = genderController;
+                  final country = countryController;
+
+                  // print("firstName= ${firstName} ");
+                  // print("lastName = ${lastName} ");
+                  // print("gender  =  ${gender} ");
+                  // print("country =  ${country} ");
+
+                  if (firstName != '' &&
+                      lastName != '' &&
+                      gender != '' &&
+                      gender != 'Select your gender' &&
+                      country != '') {
+                    _addArtist(firstName, lastName, gender, country);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Verify the input'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),

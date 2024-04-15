@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+// import 'package:music_site/screens/add_artist.dart';
+// import 'package:music_site/screens/add_song.dart';
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:music_site/screens/login_signup_screen.dart';
 
@@ -19,6 +21,7 @@ class MyApp extends StatelessWidget {
       // ),
       debugShowCheckedModeBanner: false,
       home: LoginSignupScreen(),
+      // home: AddSong(),
     );
   }
 }

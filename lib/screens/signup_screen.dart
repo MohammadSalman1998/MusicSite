@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+// import 'package:fluttertoast/fluttertoast.dart';
 import 'package:music_site/components/my_button.dart';
 import 'package:music_site/components/my_text_field.dart';
 import 'package:music_site/screens/login_screen.dart';
+import 'package:http/http.dart' as http;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -25,6 +28,88 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
   }
 
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmpasswordController =
+      TextEditingController();
+  final TextEditingController firstNameController = TextEditingController();
+  final TextEditingController lastNameController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  Future<void> _registerUser(String username, String password, String firstName,
+      String lastName, String address, String email) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: const Color.fromARGB(255, 185, 57, 10),
+            backgroundColor:
+                const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
+          ));
+        });
+
+    final url =
+        Uri.https('musicsitedb.000webhostapp.com', '/API/AddCustomer.php');
+    final response = await http.post(url, body: {
+      'username': username,
+      'password': password,
+      'firstName': firstName,
+      'lastName': lastName,
+      'address': address,
+      'email': email,
+    });
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+
+    var getData = json.decode(response.body);
+    if (getData == 'errorExiste') {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content:
+                Text('This user name or email already existe, try another'),
+            backgroundColor: Color.fromARGB(255, 255, 28, 7),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } else {
+      if (response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Registration successful!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+          usernameController.text = '';
+          passwordController.text = '';
+          confirmpasswordController.text = '';
+          firstNameController.text = '';
+          lastNameController.text = '';
+          addressController.text = '';
+          emailController.text = '';
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()));
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Registration failed: ${response.body}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,15 +122,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // const SizedBox(
-              //   height: 40,
-              // ),
               Image.asset(
                 "assets/logo4.jpg",
                 width: 200,
@@ -53,108 +141,95 @@ class _SignUpScreenState extends State<SignUpScreen> {
               const SizedBox(
                 height: 20,
               ),
-              const MyTextField(hintText: "User Name"),
+              MyTextField(
+                  controller: usernameController, hintText: "User Name"),
               const SizedBox(height: 10),
-              const Row(
+              Row(
                 children: [
                   Expanded(
-                    // flex: 2,
-                    child: MyTextField(hintText: "First Name"),
+                    child: MyTextField(
+                        controller: firstNameController,
+                        hintText: "First Name"),
                   ),
-                  // SizedBox(height: 10),
                   Expanded(
-                    // flex: 3,
-                    child: MyTextField(hintText: "Last Name"),
+                    child: MyTextField(
+                        controller: lastNameController, hintText: "Last Name"),
                   ),
-                  // SizedBox(height: 10),
                 ],
               ),
               const SizedBox(height: 10),
               MyTextField(
+                controller: passwordController,
                 hintText: "Password",
                 onPressed: showPassword,
                 obsecureText: showPass ? false : true,
                 icon: showPass ? Icons.visibility_off : Icons.visibility,
               ),
               const SizedBox(height: 10),
-
               MyTextField(
+                controller: confirmpasswordController,
                 hintText: "Confirm Password",
                 onPressed: showConfPass,
                 obsecureText: showConfirm ? false : true,
                 icon: showConfirm ? Icons.visibility_off : Icons.visibility,
               ),
-              // Row(
-              //   children: [
-              //     Expanded(
-              //       // flex: 2,
-              //       child: MyTextField(
-              //         hintText: "Password",
-              //         onPressed: showPassword,
-              //         obsecureText: showPass ? false : true,
-              //         icon: showPass ? Icons.visibility_off : Icons.visibility,
-              //       ),
-              //     ),
-              //     // SizedBox(height: 10),
-              //     Expanded(
-              //       // flex: 1,
-              //       child: MyTextField(
-              //         hintText: "Confirm Password",
-              //         onPressed: showConfPass,
-              //         obsecureText: showConfirm ? false : true,
-              //         icon:
-              //             showConfirm ? Icons.visibility_off : Icons.visibility,
-              //       ),
-              //     ),
-              //     // SizedBox(height: 10),
-              //   ],
-              // ),
-
-              // MyTextField(
-              //   hintText: "Password",
-              //   onPressed: showPassword,
-              //   obsecureText: showPass ? false : true,
-              //   icon: showPass ? Icons.visibility_off : Icons.visibility,
-              // ),
-              // const SizedBox(height: 10),
-              // MyTextField(
-              //   hintText: "Confirm Password",
-              //   onPressed: showConfPass,
-              //   obsecureText: showConfirm ? false : true,
-              //   icon: showConfirm ? Icons.visibility_off : Icons.visibility,
-              // ),
               const SizedBox(height: 10),
-              // const MyTextField(hintText: "First Name"),
-              // const SizedBox(height: 10),
-              // const MyTextField(hintText: "Last Name"),
-
-              const MyTextField(
+              MyTextField(
+                controller: addressController,
                 hintText: "Address",
                 keyboardType: TextInputType.streetAddress,
               ),
               const SizedBox(height: 10),
-              const MyTextField(
+              MyTextField(
+                controller: emailController,
                 hintText: "Email",
                 keyboardType: TextInputType.emailAddress,
               ),
-              // TextField(
-              //   decoration: const InputDecoration(
-              //     hintText: "Email",
-              //     border: InputBorder.none,
-              //   ),
-              //   keyboardType: TextInputType.emailAddress,
-              // ),
               const SizedBox(
                 height: 12,
               ),
-
               const SizedBox(
                 height: 20,
               ),
               MyButton(
                 customColor: const Color.fromARGB(255, 185, 57, 10),
                 text: "Sign Up",
-                onTap: () {},
+                onTap: () {
+                  final username = usernameController.text;
+                  final pwd = passwordController.text;
+                  final confirmpwd = confirmpasswordController.text;
+                  final firstName = firstNameController.text;
+                  final lastName = lastNameController.text;
+                  final address = addressController.text;
+                  final email = emailController.text;
+
+                  if (pwd == confirmpwd &&
+                      username != '' &&
+                      firstName != '' &&
+                      lastName != '' &&
+                      address != '' &&
+                      email != '') {
+                    final password = passwordController.text;
+                    _registerUser(username, password, firstName, lastName,
+                        address, email);
+                  } else if (pwd != confirmpwd) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Password does not match'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Verify the input'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                },
               ),
               const SizedBox(
                 height: 40,

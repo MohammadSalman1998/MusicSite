@@ -1,9 +1,10 @@
-// import 'package:csc_picker/csc_picker.dart';
-// import 'package:csc_picker/dropdown_with_search.dart';
+// ignore_for_file: non_constant_identifier_names
+
+import 'dart:convert';
 import 'package:flutter/material.dart';
-// import 'package:flutter/widgets.dart';
 import 'package:music_site/components/my_button.dart';
 import 'package:music_site/components/my_text_field.dart';
+import 'package:http/http.dart' as http;
 
 class AddSong extends StatefulWidget {
   const AddSong({super.key});
@@ -13,8 +14,88 @@ class AddSong extends StatefulWidget {
 }
 
 class _AddSongState extends State<AddSong> {
-  List<String> items = ['Male', 'Female'];
-  String selectedItem = 'Male';
+  List artistNames = [];
+
+  Future getArtists() async {
+    var url = "https://musicsitedb.000webhostapp.com/API/getArtists.php";
+    var responseartist = await http.get(Uri.parse(url));
+    if (responseartist.statusCode == 200) {
+      var items = json.decode(responseartist.body);
+      setState(() {
+        artistNames = items;
+      });
+    }
+  }
+
+  var NameselectedArtist;
+  var IDselectedArtist;
+
+  @override
+  void initState() {
+    super.initState();
+    getArtists();
+  }
+
+  final TextEditingController TitleSongController = TextEditingController();
+  final TextEditingController TypeSongController = TextEditingController();
+  final TextEditingController PriceSongController = TextEditingController();
+  // late int IDArtistController;
+  // var PriceSongController;
+
+  Future<void> _addSong(
+      String Title, String Type, String Price, String IDartist) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return Center(
+              child: CircularProgressIndicator(
+            color: const Color.fromARGB(255, 185, 57, 10),
+            backgroundColor:
+                const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
+          ));
+        });
+    final url = Uri.https('musicsitedb.000webhostapp.com', '/API/AddSong.php');
+    final response = await http.post(url, body: {
+      'Title': Title,
+      'Type': Type,
+      'Price': Price,
+      'ID_artist': IDartist,
+    });
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+
+    if (response.statusCode == 200) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Added Song successful!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+
+      TitleSongController.text = '';
+      TypeSongController.text = '';
+      PriceSongController.text = '';
+      Navigator.push(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (context) => const AddSong()));
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added failed: ${response.body}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,15 +108,18 @@ class _AddSongState extends State<AddSong> {
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: SafeArea(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // const SizedBox(
-              //   height: 40,
-              // ),
               Image.asset(
                 "assets/logo4.jpg",
                 width: 300,
@@ -43,24 +127,22 @@ class _AddSongState extends State<AddSong> {
               const SizedBox(
                 height: 20,
               ),
-              const MyTextField(hintText: "Title"),
+              MyTextField(controller: TitleSongController, hintText: "Title"),
               const SizedBox(height: 10),
-              const MyTextField(hintText: "Type"),
+              MyTextField(controller: TypeSongController, hintText: "Type"),
               const SizedBox(height: 10),
-              const MyTextField(
+              MyTextField(
+                controller: PriceSongController,
                 icon: Icons.price_change,
                 hintText: "Price",
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 10),
-
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 25),
                 padding:
                     const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 decoration: BoxDecoration(
-                  // color:
-                  // const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
@@ -71,66 +153,79 @@ class _AddSongState extends State<AddSong> {
                     ),
                   ],
                 ),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Expanded(
-                      child: DropdownMenu(
-                        // controller: iconController,
-                        width: double.maxFinite,
-                        enableFilter: true,
-                        requestFocusOnTap: true,
-                        label: Text('Select an Artist'),
-                        inputDecorationTheme: InputDecorationTheme(
-                          filled: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 3.0),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton(
+                          isExpanded: true,
+                          hint: const Text("select an artist"),
+                          // value: NameselectedArtist ?? emptySelect,
+                          items: artistNames.map((artist) {
+                            return DropdownMenuItem(
+                                value: artist['ID_artist'],
+                                child: Text(
+                                    artist['Fname'] + ' ' + artist['Lname']));
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              NameselectedArtist = artistNames.firstWhere(
+                                      (artist) =>
+                                          artist['ID_artist'] ==
+                                          value)['Fname'] +
+                                  ' ' +
+                                  artistNames.firstWhere((artist) =>
+                                      artist['ID_artist'] == value)['Lname'];
+                              IDselectedArtist = value;
+                            });
+                            // IDArtistController = IDselectedArtist;
+                          },
                         ),
-                        dropdownMenuEntries: [],
                       ),
                     ),
                   ],
                 ),
               ),
-
-              // const Row(
-              //   mainAxisAlignment: MainAxisAlignment.center,
-              //   children: [
-              //     Expanded(
-              //       child: DropdownMenu(
-              //         // controller: iconController,
-              //         enableFilter: true,
-              //         requestFocusOnTap: true,
-              //         // leadingIcon: Icon(Icons.s),
-              //         label: Text('Select an Artist'),
-              //         inputDecorationTheme: InputDecorationTheme(
-              //           filled: true,
-              //           contentPadding: EdgeInsets.symmetric(vertical: 5.0),
-              //         ),
-              //         dropdownMenuEntries: [],
-              //         // onSelected: () {},
-              //         // dropdownMenuEntries:
-              //         //   IconLabel.values.map<DropdownMenuEntry>(
-              //         // (IconLabel icon) {
-              //         // return DropdownMenuEntry(
-              //         // value: icon,
-              //         // label: icon.label,
-              //         //   leadingIcon: Icon(icon.icon),
-              //         // );
-              //         // },
-              //         // ).toList(),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-
+              IDselectedArtist != null
+                  ? Text(
+                      "Artist Selected is:  $NameselectedArtist \n his/her Id is: $IDselectedArtist",
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromARGB(255, 185, 57, 10),
+                      ),
+                    )
+                  : const Text(""),
               const SizedBox(
                 height: 12,
               ),
-
               MyButton(
                 customColor: const Color.fromARGB(255, 185, 57, 10),
                 text: "Add",
-                onTap: () {},
+                onTap: () {
+                  final TitleSong = TitleSongController.text;
+                  final TypeSong = TypeSongController.text;
+                  final PriceSong = PriceSongController.text;
+                  final ArtistofSong = IDselectedArtist;
+
+                  if (TitleSong != '' &&
+                      TypeSong != '' &&
+                      PriceSong != '' &&
+                      IDselectedArtist != null &&
+                      ArtistofSong != '') {
+                    _addSong(TitleSong, TypeSong, PriceSong,
+                        ArtistofSong.toString());
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Verify the input'),
+                        backgroundColor: Colors.red,
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           ),
