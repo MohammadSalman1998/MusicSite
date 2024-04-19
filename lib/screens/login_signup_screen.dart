@@ -1,7 +1,5 @@
 // ignore_for_file: file_names
 
-// import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:music_site/components/my_button.dart';
 import 'package:music_site/screens/login_screen.dart';
@@ -15,33 +13,9 @@ class LoginSignupScreen extends StatefulWidget {
 }
 
 class _LoginSignupScreenState extends State<LoginSignupScreen> {
-  // // ignore: prefer_typing_uninitialized_variables
-  // var internetResult;
-  // initDateOfInternet() async {
-  //   internetResult = await CheckInternet();
-  //   if (internetResult == false) {
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text("No Internet Connection ..."),
-  //           backgroundColor: Color.fromARGB(255, 255, 28, 7),
-  //           duration: Duration(seconds: 3),
-  //         ),
-  //       );
-  //     }
-  //   }
-  // }
-
-  // @override
-  // void initState() {
-  //   initDateOfInternet();
-  //   super.initState();
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: const Color.fromARGB(255, 19, 18, 18),
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
@@ -94,18 +68,4 @@ class _LoginSignupScreenState extends State<LoginSignupScreen> {
       ),
     );
   }
-
-  // ignore: non_constant_identifier_names
-//   CheckInternet() async {
-//     try {
-//       var resultCheckInternet =
-//           await InternetAddress.lookup("musicsitedb.000webhostapp.com");
-//       if (resultCheckInternet.isNotEmpty &&
-//           resultCheckInternet[0].rawAddress.isNotEmpty) {
-//         return true;
-//       }
-//     } on SocketException catch (_) {
-//       return false;
-//     }
-//   }
 }

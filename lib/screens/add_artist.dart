@@ -25,69 +25,68 @@ class _AddArtistState extends State<AddArtist> {
 
   Future<void> _addArtist(
       String firstName, String lastName, String gender, String country) async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: const Color.fromARGB(255, 185, 57, 10),
-            backgroundColor:
-                const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
-          ));
-        });
-    final url =
-        Uri.https('musicsitedb.000webhostapp.com', '/API/AddArtist.php');
-    final response = await http.post(url, body: {
-      'firstName': firstName,
-      'lastName': lastName,
-      'gender': gender,
-      'country': country,
-    });
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
-    // var getData = json.decode(response.body);
-    // if (getData == 'faildAddArtist') {
-    //   if (mounted) {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text('make sure of your inputs'),
-    //         backgroundColor: Color.fromARGB(255, 255, 28, 7),
-    //         duration: Duration(seconds: 3),
-    //       ),
-    //     );
-    //   }
-    // } else {
-    if (response.statusCode == 200) {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: const Color.fromARGB(255, 185, 57, 10),
+              backgroundColor:
+                  const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
+            ));
+          });
+      final url =
+          Uri.https('musicsitedb.000webhostapp.com', '/API/AddArtist.php');
+      final response = await http.post(url, body: {
+        'firstName': firstName,
+        'lastName': lastName,
+        'gender': gender,
+        'country': country,
+      });
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+      if (response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Added Artist successful!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+
+          firstNameController.text = '';
+          lastNameController.text = '';
+          genderController = '';
+          selectedItem = 'Select your gender';
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const AddArtist()));
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Added failed: ${response.body}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+      // }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Added Artist successful!'),
-            backgroundColor: Colors.green,
+            content: Text('No internet connection'),
+            backgroundColor: Color.fromARGB(255, 255, 28, 7),
             duration: Duration(seconds: 3),
-          ),
-        );
-
-        firstNameController.text = '';
-        lastNameController.text = '';
-        genderController = '';
-        selectedItem = 'Select your gender';
-        // countryController = '';
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AddArtist()));
-      }
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Added failed: ${response.body}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
           ),
         );
       }
     }
-    // }
   }
 
   @override
@@ -95,10 +94,19 @@ class _AddArtistState extends State<AddArtist> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        // automaticallyImplyLeading: false,
         title: const Text(
           "Add Artist",
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),

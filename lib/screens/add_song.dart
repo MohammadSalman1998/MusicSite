@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -17,13 +17,25 @@ class _AddSongState extends State<AddSong> {
   List artistNames = [];
 
   Future getArtists() async {
-    var url = "https://musicsitedb.000webhostapp.com/API/getArtists.php";
-    var responseartist = await http.get(Uri.parse(url));
-    if (responseartist.statusCode == 200) {
-      var items = json.decode(responseartist.body);
-      setState(() {
-        artistNames = items;
-      });
+    try {
+      var url = "https://musicsitedb.000webhostapp.com/API/getArtists.php";
+      var responseartist = await http.get(Uri.parse(url));
+      if (responseartist.statusCode == 200) {
+        var items = json.decode(responseartist.body);
+        setState(() {
+          artistNames = items;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('No internet connection'),
+            backgroundColor: Color.fromARGB(255, 255, 28, 7),
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
     }
   }
 
@@ -39,57 +51,68 @@ class _AddSongState extends State<AddSong> {
   final TextEditingController TitleSongController = TextEditingController();
   final TextEditingController TypeSongController = TextEditingController();
   final TextEditingController PriceSongController = TextEditingController();
-  // late int IDArtistController;
-  // var PriceSongController;
 
   Future<void> _addSong(
       String Title, String Type, String Price, String IDartist) async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return Center(
-              child: CircularProgressIndicator(
-            color: const Color.fromARGB(255, 185, 57, 10),
-            backgroundColor:
-                const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
-          ));
-        });
-    final url = Uri.https('musicsitedb.000webhostapp.com', '/API/AddSong.php');
-    final response = await http.post(url, body: {
-      'Title': Title,
-      'Type': Type,
-      'Price': Price,
-      'ID_artist': IDartist,
-    });
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return Center(
+                child: CircularProgressIndicator(
+              color: const Color.fromARGB(255, 185, 57, 10),
+              backgroundColor:
+                  const Color.fromARGB(255, 203, 202, 202).withOpacity(0.5),
+            ));
+          });
+      final url =
+          Uri.https('musicsitedb.000webhostapp.com', '/API/AddSong.php');
+      final response = await http.post(url, body: {
+        'Title': Title,
+        'Type': Type,
+        'Price': Price,
+        'ID_artist': IDartist,
+      });
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Added Song successful!'),
+              backgroundColor: Colors.green,
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+
+        TitleSongController.text = '';
+        TypeSongController.text = '';
+        PriceSongController.text = '';
+        Navigator.push(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const AddSong()));
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Added failed: ${response.body}'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 3),
+            ),
+          );
+        }
+      }
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Added Song successful!'),
-            backgroundColor: Colors.green,
+            content: Text('No internet connection'),
+            backgroundColor: Color.fromARGB(255, 255, 28, 7),
             duration: Duration(seconds: 3),
-          ),
-        );
-      }
-
-      TitleSongController.text = '';
-      TypeSongController.text = '';
-      PriceSongController.text = '';
-      Navigator.push(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => const AddSong()));
-    } else {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Added failed: ${response.body}'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
           ),
         );
       }
@@ -101,10 +124,19 @@ class _AddSongState extends State<AddSong> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        // automaticallyImplyLeading: false,
         title: const Text(
           "Add Song",
           style: TextStyle(color: Colors.white),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              Navigator.pushReplacementNamed(context, '/login');
+            },
+          ),
+        ],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),

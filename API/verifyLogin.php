@@ -1,25 +1,35 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] != "POST") {
-    return;
+// if ($_SERVER['REQUEST_METHOD'] != "POST") {
+//     return;
+// }
+
+include 'DBconnect.php';
+
+if(isset($_POST['username'])){
+    
+    $username = $_POST['username'];
+    $password = SHA1($_POST['password']); // Hash password for security
+
+    
+    $users = SQLQuery("SELECT * FROM `Customer`  WHERE (`userName` = '$username' OR `Email` = '$username')
+                                AND `Password` = '$password'");
+    
+    
+    if(count($users) > 0){
+        session_start();
+        // $_SESSION['customerID'] = $users[0]['ID_customer'];
+        $ID = $users[0]['ID_customer'];
+        $admin = $users[0]['isAdmin'];
+        if($username == 'Admin' && $admin == 1){
+            echo json_encode('successAdminLogin');
+            echo json_encode($ID);
+        }else{
+        echo json_encode('successLogin');
+        echo json_encode($ID);
+        }
+    }else{
+        echo json_encode('errorLogin');
+    }
 }
-
-require_once('DBconnect.php');
-
-
-$username = $_POST['username'];
-$password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Hash password for security
-$email = $_POST['email'];
-
-
-$users = SQLQuery("SELECT `ID_customer`, `userName`, `Password`, `Fname`, `Lname`, `Address`, `Email`
-                    FROM `Customer` 
-                    WHERE (`userName` = '$userName' OR `Email` = '$email')
-                    AND `Password` = '$Password'");
-
-
-if(count($users) > 0){
-    echo json_encode('successLogin');
-}
-
 
 ?>

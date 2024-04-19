@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-// import 'package:music_site/screens/add_artist.dart';
-// import 'package:music_site/screens/add_song.dart';
 // import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter/material.dart';
+import 'package:music_site/screens/login_screen.dart';
 import 'package:music_site/screens/login_signup_screen.dart';
 
 void main() {
@@ -13,15 +12,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       // theme: ThemeData(
       //   textTheme: GoogleFonts.poppinsTextTheme(
       //     Theme.of(context).textTheme,
       //   ),
       // ),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: '/login',
+
+      routes: {
+        '/login': (context) => const LoginScreen(),
+      },
       debugShowCheckedModeBanner: false,
-      home: LoginSignupScreen(),
-      // home: AddSong(),
+      home: const LoginSignupScreen(),
     );
   }
 }
