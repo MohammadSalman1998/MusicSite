@@ -2,7 +2,7 @@
     <application
         android:label="music_site"
         android:name="${applicationName}"
-        android:icon="@mipmap/musicicon">
+        android:icon="@mipmap/launcher_icon">
         <activity
             android:name=".MainActivity"
             android:exported="true"
