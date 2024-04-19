@@ -21,14 +21,13 @@ if(isset($_POST['username'])){
         $ID = $users[0]['ID_customer'];
         $admin = $users[0]['isAdmin'];
         if($username == 'Admin' && $admin == 1){
-            echo json_encode('successAdminLogin');
-            echo json_encode($ID);
+            $response = array('status' => 'successAdminLogin', 'ID' => $ID);
         }else{
-        echo json_encode('successLogin');
-        echo json_encode($ID);
+        $response = array('status' => 'successLogin', 'ID' => $ID);
         }
+        echo json_encode($response);
     }else{
-        echo json_encode('errorLogin');
+        echo json_encode(array('status' => 'errorLogin'));
     }
 }
 

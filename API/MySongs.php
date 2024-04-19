@@ -12,6 +12,7 @@ $sql = SQLQuery("
                     JOIN `Order` ON `Song`.`ID_song` = `Order`.`ID_song`
                     JOIN `Invoice` ON `Invoice`.`ID_invoice` = `Order`.`ID_invoice`
                     WHERE `Invoice`.`ID_customer` = '$ID_customer'
+                    GROUP BY `Song`.`Title` 
                     ORDER BY `Invoice`.`Date` DESC
                     ");
 

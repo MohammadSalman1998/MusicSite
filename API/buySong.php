@@ -1,17 +1,14 @@
 <?php
 
 include 'DBconnect.php';
-include 'verifyLogin.php';
 
 if(isset($_POST['CreditCard'])){
-session_start();
-  $ID_customer = $_SESSION['customerID'];
+  $ID_customer = $_POST['IDCustomer'];
   $Total = $_POST['Total'];
   $CreditCard = $_POST['CreditCard'];
+  $ID_song = $_POST['ID_song'];
 
-    // Prepare SQL query to insert user data
-    $query = "INSERT INTO `Invoice` (`ID_customer`, `Date`, `Total`, `CreditCard`) 
-    VALUES (:ID_customer , CURRENT_DATE, :Total, :CreditCard)";
+    $query = "INSERT INTO `Invoice` (`ID_customer`, `Date`, `Total`, `CreditCard`) VALUES (:ID_customer , CURRENT_DATE, :Total, :CreditCard)";
 
     $data = [
         ":ID_customer"        => $ID_customer,
@@ -20,12 +17,30 @@ session_start();
     ];
 
     // Execute query using SQLWithData
-    $result = SQLWithData($query, $data);
+    $resultBuy = SQLWithData($query, $data);
+    
+    $lastInvoiceId = SQLlastID($query);
+    
+     $queryOrder = "INSERT INTO `Order`( `ID_song`, `ID_invoice`) VALUES (:ID_song , :ID_invoice)";
 
-    if ($result) {
-      echo json_encode('successBuy');
+    $dataOrder = [
+        ":ID_song"        => $ID_song,
+        ":ID_invoice"      =>   $lastInvoiceId
+    ];
+
+    // Execute query using SQLWithData
+    $resultOrder = SQLWithData($queryOrder, $dataOrder);
+    
+
+    if ($resultBuy && $resultOrder) {
+    //   echo json_encode('successBuy');
+      echo json_encode(array('statusBuy' => 'successBuy'));
     } else {
-      echo json_encode('faildBuy');
+    //   echo json_encode('faildBuy');
+      echo json_encode(array('statusBuy' => 'faildBuy'));
     }
-  }   
+  }
+  else {
+    echo json_encode('Please provide a credit card number.');
+}
 ?>
