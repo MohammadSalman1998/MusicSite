@@ -16,7 +16,6 @@ if(isset($_POST['CreditCard'])){
         ":CreditCard"   =>      $CreditCard
     ];
 
-    // Execute query using SQLWithData
     $resultBuy = SQLWithData($query, $data);
     
     $lastInvoiceId = SQLlastID($query);
@@ -28,15 +27,12 @@ if(isset($_POST['CreditCard'])){
         ":ID_invoice"      =>   $lastInvoiceId
     ];
 
-    // Execute query using SQLWithData
     $resultOrder = SQLWithData($queryOrder, $dataOrder);
     
 
     if ($resultBuy && $resultOrder) {
-    //   echo json_encode('successBuy');
       echo json_encode(array('statusBuy' => 'successBuy'));
     } else {
-    //   echo json_encode('faildBuy');
       echo json_encode(array('statusBuy' => 'faildBuy'));
     }
   }

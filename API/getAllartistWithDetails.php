@@ -25,7 +25,6 @@ foreach($sql as $q){
     ];
 }
 
-// header('Content-Type: application/json');
 echo json_encode($ArtistDetails);
 
 ?>

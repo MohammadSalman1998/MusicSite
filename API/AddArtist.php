@@ -9,7 +9,6 @@ if(isset($_POST['firstName'])){
   $gender = $_POST['gender'];
   $country = $_POST['country'];
 
-    // Prepare SQL query to insert user data
     $query = "INSERT INTO `Artist` (`Fname`, `Lname`, `gender`, `country`) VALUES (:firstName , :lastName, :gender, :country)";
 
     $data = [
@@ -19,7 +18,6 @@ if(isset($_POST['firstName'])){
         ":country"   =>      $country
     ];
 
-    // Execute query using SQLWithData
     $result = SQLWithData($query, $data);
 
     if ($result) {

@@ -21,13 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login',
-
-      routes: {
-        '/login': (context) => const LoginScreen(),
-      },
+      initialRoute: '/home',
       debugShowCheckedModeBanner: false,
       home: const LoginSignupScreen(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/home': (context) => const LoginSignupScreen(),
+      },
     );
   }
 }

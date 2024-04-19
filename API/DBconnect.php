@@ -1,25 +1,6 @@
 <?php 
 
-// $serverName = 'localhost';
-// $userName = 'id22034906_musicsitedb';
-// $Password = 'MusicSite@123456';
-// $dbName = 'id22034906_musicsitedb';
-// $table = '';
-
-// $con = new mysqli($serverName, $userName, $Password, $dbName);
-
-// if($con->connect_error){
-//     die("Connection failed: ". $con->connect_error);
-//     return;
-// }
-
-// $connect = new PDO("mysql:host=localhost;dbname=id22034906_musicsitedb;charset=utf8", "id22034906_musicsitedb", "MusicSite@123456");
-
-  $connect = new PDO("mysql:host=localhost;dbname=id22034906_musicsitedb;charset=utf8", "id22034906_musicsitedb", "MusicSite@123456");
-
-
-
-// Function for executing SQL queries without data binding
+$connect = new PDO("mysql:host=localhost;dbname=id22034906_musicsitedb;charset=utf8", "id22034906_musicsitedb", "MusicSite@123456");
 function SQLQuery($q)
 {
     global $connect;
@@ -28,7 +9,6 @@ function SQLQuery($q)
     return $statement->fetchAll();
 }
 
-// Function for executing SQL queries with data binding
 function SQLWithData($query, $data)
 {
     global $connect;
@@ -36,7 +16,6 @@ function SQLWithData($query, $data)
     $statement->execute($data);
     return $statement->fetchAll();
 }
-// Function for executing SQL queries to get last ID
 function SQLlastID($query)
 {
     global $connect;

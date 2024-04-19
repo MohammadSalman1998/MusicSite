@@ -9,7 +9,6 @@ if(isset($_POST['Title']) && isset($_POST['ID_artist'])){
   $Price = $_POST['Price'];
   $ID_artist = $_POST['ID_artist'];
 
-    // Prepare SQL query to insert user data
     $query = "INSERT INTO `Song` (`Title`, `Type`, `Price`, `ID_artist`) VALUES (:Title , :Type, :Price, :ID_artist)";
 
     $data = [
@@ -19,7 +18,6 @@ if(isset($_POST['Title']) && isset($_POST['ID_artist'])){
         ":ID_artist"   =>      $ID_artist
     ];
 
-    // Execute query using SQLWithData
     $result = SQLWithData($query, $data);
 
     if ($result) {
