@@ -15,7 +15,7 @@ if(isset($_POST['username'])){
     if(count($users) > 0){
         $ID = $users[0]['ID_customer'];
         $admin = $users[0]['isAdmin'];
-        if($username == 'Admin' && $admin == 1){
+        if(($username == 'Admin' || $username == 'admin') && $admin == 1){
             $response = array('status' => 'successAdminLogin', 'ID' => $ID);
         }else{
         $response = array('status' => 'successLogin', 'ID' => $ID);

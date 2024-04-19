@@ -1,5 +1,7 @@
 // import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
+import 'package:music_site/screens/add_artist.dart';
+import 'package:music_site/screens/add_song.dart';
 import 'package:music_site/screens/login_screen.dart';
 import 'package:music_site/screens/login_signup_screen.dart';
 
@@ -27,6 +29,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => const LoginScreen(),
         '/home': (context) => const LoginSignupScreen(),
+        '/AddArtist': (context) => const AddArtist(),
+        '/AddSong': (context) => const AddSong(),
       },
     );
   }

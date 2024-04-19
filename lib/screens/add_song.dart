@@ -1,4 +1,4 @@
-// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -91,10 +91,10 @@ class _AddSongState extends State<AddSong> {
         TitleSongController.text = '';
         TypeSongController.text = '';
         PriceSongController.text = '';
-        Navigator.push(
-            // ignore: use_build_context_synchronously
-            context,
-            MaterialPageRoute(builder: (context) => const AddSong()));
+        // Navigator.push(
+        //     context,
+        //     MaterialPageRoute(builder: (context) => const AddSong()));
+        Navigator.pushReplacementNamed(context, '/AddSong');
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -129,14 +129,14 @@ class _AddSongState extends State<AddSong> {
           "Add Song",
           style: TextStyle(color: Colors.white),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.logout),
+        //     onPressed: () {
+        //       Navigator.pushReplacementNamed(context, '/login');
+        //     },
+        //   ),
+        // ],
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: const Color.fromARGB(255, 185, 57, 10),

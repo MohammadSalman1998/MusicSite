@@ -60,14 +60,14 @@ class _MySongsState extends State<MySongs> {
             "My Songs ",
             style: TextStyle(color: Colors.white),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
-              },
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.logout),
+          //     onPressed: () {
+          //       Navigator.pushReplacementNamed(context, '/login');
+          //     },
+          //   ),
+          // ],
           centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: const Color.fromARGB(255, 185, 57, 10),

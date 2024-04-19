@@ -196,14 +196,14 @@ class _DisplaySongPageState extends State<DisplaySongPage> {
             "All Songs ",
             style: TextStyle(color: Colors.white),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
-              },
-            ),
-          ],
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.logout),
+          //     onPressed: () {
+          //       Navigator.pushReplacementNamed(context, '/login');
+          //     },
+          //   ),
+          // ],
           centerTitle: true,
           iconTheme: const IconThemeData(color: Colors.white),
           backgroundColor: const Color.fromARGB(255, 185, 57, 10),
@@ -213,51 +213,6 @@ class _DisplaySongPageState extends State<DisplaySongPage> {
               bottomRight: Radius.circular(25),
             ),
           ),
-          // actions: [
-          //   IconButton(
-          //     icon: const Icon(Icons.search),
-          //     onPressed: () {
-          //       setState(() {
-          //         if (_searchController.text.isNotEmpty) {
-          //           songsList
-          //               .where((song) => song["Title"]
-          //                   .toLowerCase()
-          //                   .contains(_searchController.text.toLowerCase()))
-          //               .toList();
-          //         } else {
-          //           // filteredSongsList = songsList;
-          //           songsList = filteredSongsList;
-          //         }
-          //       });
-          //     },
-          //   ),
-          //   const SizedBox(
-          //     width: 10,
-          //   ),
-          //   Expanded(
-          //     child: TextField(
-          //       controller: _searchController,
-          //       decoration: const InputDecoration(
-          //         hintText: "Search",
-          //         border: InputBorder.none,
-          //         contentPadding: EdgeInsets.symmetric(horizontal: 16),
-          //       ),
-          //       onChanged: (value) {
-          //         setState(() {
-          //           if (value.isNotEmpty) {
-          //             filteredSongsList = songsList
-          //                 .where((song) => song["Title"]
-          //                     .toLowerCase()
-          //                     .contains(value.toLowerCase()))
-          //                 .toList();
-          //           } else {
-          //             filteredSongsList = songsList;
-          //           }
-          //         });
-          //       },
-          //     ),
-          //   ),
-          // ],
         ),
         body: ListView.builder(
             itemCount: songsList.length,
